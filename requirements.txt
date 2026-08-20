@@ -1,0 +1,10 @@
+# RuoYi-Vue 接口自动化测试依赖
+# 版本按本机 Python 3.13 环境锁定（与本机已安装版本一致）
+# 若需在 CentOS 7（Python 3.6）运行，请改用兼容 Python 3.6 的旧版本
+
+requests==2.34.2
+pytest==9.1.1
+allure-pytest==2.16.0
+PyYAML==6.0.3
+Faker==40.36.0
+PyMySQL==1.2.0
