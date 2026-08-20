@@ -31,8 +31,10 @@ class APIClient:
     # ---------- 登录与 token 管理 ----------
     def login(self, username=None, password=None):
         """使用管理员账号登录，成功后保存 token 并写入请求头。"""
-        username = username or ADMIN_USER
-        password = password or ADMIN_PWD
+        # 注意：仅当未传参(None)时使用默认账号；空字符串属于有效测试数据，
+        # 不能用 `or` 代替，否则空账号/空密码会被默认值覆盖。
+        username = ADMIN_USER if username is None else username
+        password = ADMIN_PWD if password is None else password
         try:
             resp = self.session.post(
                 LOGIN_URL,
