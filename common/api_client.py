@@ -11,7 +11,10 @@ API 客户端封装。
 """
 import requests
 
+from common.logger import get_logger
 from config.settings import BASE_URL, LOGIN_URL, ADMIN_USER, ADMIN_PWD, TIMEOUT
+
+logger = get_logger("api_client")
 
 
 class ApiError(Exception):
@@ -46,11 +49,17 @@ class APIClient:
 
         data = self._parse_json(resp, "登录")
         if data.get("code") != 200 or not data.get("token"):
+            logger.warning(
+                "登录失败: user={}, code={}, msg={}".format(
+                    username, data.get("code"), data.get("msg")
+                )
+            )
             raise ApiError(
                 "登录失败: code={}, msg={}".format(data.get("code"), data.get("msg"))
             )
         self.token = data["token"]
         self.session.headers["Authorization"] = "Bearer " + self.token
+        logger.info("登录成功: user={}".format(username))
         return self.token
 
     def _ensure_login(self):
@@ -66,8 +75,10 @@ class APIClient:
         try:
             resp = self.session.request(method, self.base_url + url, **kwargs)
         except requests.RequestException as exc:
+            logger.error("请求异常: {} {} - {}".format(method, url, exc))
             raise ApiError("请求失败 {} {}: {}".format(method, url, exc))
 
+        logger.info("{} {} -> HTTP {}".format(method, url, resp.status_code))
         if resp.status_code == 401 and retry:
             # token 失效：重新登录后重试一次
             self.login()

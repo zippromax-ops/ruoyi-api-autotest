@@ -15,4 +15,5 @@ reports/
 .idea/
 
 # 日志
+logs/
 *.log
